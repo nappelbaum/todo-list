@@ -39,34 +39,32 @@ const deleteNote = () => {
 </script>
 
 <template>
-  <li class="flex flex-col gap-y-2 items-center">
-    <router-link :to="'/note/' + note.noteId" class="inline-block mx-auto">
-      <h3 class="text-xl font-semibold">{{ note.title }}</h3>
-    </router-link>
-    <ul class="flex flex-col gap-y-1 items-center text-base">
-      <li v-for="task in tasks" :key="task.id">
-        <p :class="task.completed && 'line-through'" class="text-center">- {{ task.text }}</p>
-      </li>
-      <div class="flex gap-x-3">
-        <router-link :to="'/note/' + note.noteId" class="inline-block mx-auto">
-          <icon-btn
-            type="edit"
-            color="rgb(23 209 64)"
-            classList="md-42"
-            title="Редактировать заметку"
-          />
-        </router-link>
+  <router-link :to="'/note/' + note.noteId" class="inline-block mx-auto">
+    <h3 class="text-xl font-semibold">{{ note.title }}</h3>
+  </router-link>
+  <ul class="flex flex-col gap-y-1 items-center text-base">
+    <li v-for="task in tasks" :key="task.id">
+      <p :class="task.completed && 'line-through'" class="text-center">- {{ task.text }}</p>
+    </li>
+    <div class="flex gap-x-3">
+      <router-link :to="'/note/' + note.noteId" class="inline-block mx-auto">
         <icon-btn
-          type="delete"
-          color="#f93333"
-          classList="md-44"
-          title="Удалить заметку"
-          @click="() => (showDeleteModal = true)"
+          type="edit"
+          color="rgb(23 209 64)"
+          classList="md-42"
+          title="Редактировать заметку"
         />
-      </div>
-    </ul>
-    <hr class="w-full mt-4 mb-6 border-slate-400" />
-  </li>
+      </router-link>
+      <icon-btn
+        type="delete"
+        color="#f93333"
+        classList="md-44"
+        title="Удалить заметку"
+        @click="() => (showDeleteModal = true)"
+      />
+    </div>
+  </ul>
+  <hr class="w-full mt-4 mb-6 border-slate-400" />
 
   <modal-window
     :show="showDeleteModal"

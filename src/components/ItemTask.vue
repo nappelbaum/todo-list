@@ -3,7 +3,8 @@ import { ref } from 'vue'
 import IconBtn from './IconBtn.vue'
 
 const props = defineProps({
-  task: Object
+  task: Object,
+  index: Number
 })
 
 const completed = defineModel('completed')
@@ -13,12 +14,11 @@ const emit = defineEmits(['deleteTask', 'onChangeTextInput'])
 const editable = ref(false)
 const todoInput = ref(null)
 
-const onClick = () => {
+const onClick = async () => {
   if (!props.task.completed) {
     editable.value = true
-    setTimeout(() => {
-      todoInput.value.focus()
-    })
+    await todoInput.value
+    todoInput.value.focus()
   }
 }
 
@@ -32,8 +32,8 @@ const onFocus = (e) => {
   autosize(e)
 }
 
-const onInput = (task, e) => {
-  emit('onChangeTextInput', task, e)
+const onInput = (e) => {
+  emit('onChangeTextInput', props.index, e.target.value)
   autosize(e)
 }
 </script>
@@ -49,7 +49,7 @@ const onInput = (task, e) => {
     placeholder="Нажмите для редактирования"
     @focus="onFocus"
     @blur="editable = false"
-    @input="(e) => onInput(task, e)"
+    @input="onInput"
     @keydown.prevent.enter="editable = false"
   ></textarea>
 

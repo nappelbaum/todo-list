@@ -21,7 +21,7 @@ export default {
       const noteNoMut = JSON.parse(JSON.stringify(note))
       const currentIndex = state.notes.findIndex((item) => item.noteId === noteNoMut.noteId)
       if (currentIndex < 0) {
-        state.notes.push(noteNoMut)
+        state.notes.unshift(noteNoMut)
       } else state.notes[currentIndex] = noteNoMut
       LocalStorage.setNotes(state.notes)
     },

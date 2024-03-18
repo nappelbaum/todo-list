@@ -119,7 +119,7 @@ watch(
   { deep: true }
 )
 
-/** update Note when delete on mainPage in new tab */
+/** update Note when rerouting */
 watch(route, fetchNote, { deep: true })
 
 /** promise for modal window */
@@ -134,7 +134,7 @@ const modalPromise = (showModal) => {
   })
 }
 
-/** safe rerouting from the page */
+/** get warning, when rerouting from the page */
 onBeforeRouteLeave(async () => {
   if (historyLengthOnSave.value < noteHistory.value.length) {
     showLeaveModal.value = true

@@ -24,9 +24,15 @@ const error = computed(() => store.getters.notesErr)
     <div v-else class="flex flex-col items-center font-body">
       <div class="flex flex-col items-center font-body">
         <h2 class="font-bold text-xl mb-2 leading-8">Список заметок:</h2>
-        <ul class="flex flex-col gap-y-2 items-center text-lg w-full">
-          <note-card v-for="note in notes" :key="note.noteId" :note="note" />
-        </ul>
+        <transition-group
+          tag="ul"
+          name="notes"
+          class="flex flex-col gap-y-2 items-center text-lg w-full"
+        >
+          <li v-for="note in notes" :key="note.noteId" class="flex flex-col gap-y-2 items-center">
+            <note-card :note="note" />
+          </li>
+        </transition-group>
       </div>
       <router-link to="/note" class="inline-block mx-auto">
         <icon-btn type="add" color="rgb(26 27 59)" classList="md-44" title="Добавить заметку" />
@@ -34,3 +40,21 @@ const error = computed(() => store.getters.notesErr)
     </div>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.notes-enter-active,
+.notes-move {
+  transition: 0.4s ease all;
+}
+
+.notes-enter-from,
+.notes-leave-to {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+.notes-leave-active {
+  transition: 0.4s ease all;
+  position: absolute;
+}
+</style>
