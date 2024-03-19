@@ -89,10 +89,10 @@ watch(route, fetchNote, { deep: true })
 const modalPromise = (showModal) => {
   return new Promise((resolve) => {
     watch(confirm, () => {
-      resolve('resolve')
+      resolve(true)
     })
     watch(showModal, () => {
-      resolve('')
+      resolve(false)
     })
   })
 }
@@ -103,8 +103,7 @@ onBeforeRouteLeave(async () => {
     showLeaveModal.value = true
     const res = await modalPromise(showLeaveModal)
     showLeaveModal.value = false
-    if (res === 'resolve') return true
-    else return false
+    return res ? true : false
   }
 })
 
