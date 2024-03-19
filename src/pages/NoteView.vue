@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, provide, ref, watch } from 'vue'
+import { useDebouncedRefHistory } from '@vueuse/core'
 import { v4 as uuidv4 } from 'uuid'
 import store from '@/store'
 import copy from '../functions/noMutCopy'
@@ -10,17 +11,19 @@ import ItemTasks from '../components/ItemTasksList.vue'
 import IconBtn from '../components/IconBtn.vue'
 import ModalWindow from '../components/ModalWindow.vue'
 
-const note = ref({ noteId: uuidv4().substring(19), title: '', tasks: [] })
-const noteHistory = ref([])
-const historyIndex = ref(0)
-const watching = ref(true)
-const historyLengthOnSave = ref(1)
+const note = ref({})
 const showSaveModal = ref(false)
 const showDeleteModal = ref(false)
 const showLeaveModal = ref(false)
 const confirm = ref(true)
 const route = useRoute()
 const router = useRouter()
+const watchHistoryLength = ref(0)
+
+const { history, undo, redo, canUndo, canRedo, clear } = useDebouncedRefHistory(note, {
+  deep: true,
+  debounce: 300
+})
 
 const allNotes = computed(() => store.getters.allNotes)
 const error = computed(() => store.getters.notesErr)
@@ -29,25 +32,20 @@ const error = computed(() => store.getters.notesErr)
 const fetchNote = () => {
   const id = route.params.id
   if (id) {
-    const allNotesNM = copy(allNotes.value)
-    const currentNote = allNotesNM.find((item) => item.noteId == id)
+    const currentNote = copy(allNotes.value).find((item) => item.noteId == id)
     if (currentNote) note.value = currentNote
     else router.replace({ name: 'HomePage' })
   } else note.value = { noteId: uuidv4().substring(19), title: '', tasks: [] }
-  noteHistory.value.length = 0
-  historyIndex.value = 0
-  watching.value = true
-  historyLengthOnSave.value = 1
+  watchHistoryLength.value = 1
+  setTimeout(() => clear(), 330)
 }
 
 /** save Note and rerouting to the note:id page*/
-const saveNote = () => {
+const saveNote = async () => {
   showSaveModal.value = true
-  historyLengthOnSave.value = noteHistory.value.length
-  setTimeout(() => {
-    store.dispatch('updateNotes', note.value)
-    !route.params.id && router.replace(`/note/${note.value.noteId}`)
-  }, 300)
+  watchHistoryLength.value = history.value.length
+  store.dispatch('updateNotes', note.value)
+  !route.params.id && router.replace(`/note/${note.value.noteId}`)
 }
 
 /** delete Note and rerouting to the main page*/
@@ -57,32 +55,14 @@ const deleteNote = () => {
   router.replace({ name: 'HomePage' })
 }
 
-/** undo and get noteHistory */
-const undo = () => {
-  watching.value = false
-  if (historyIndex.value > 0) {
-    historyIndex.value--
-    note.value = copy(noteHistory.value[historyIndex.value])
-  }
-}
-
-/** redo and get noteHistory */
-const redo = () => {
-  watching.value = false
-  if (historyIndex.value < noteHistory.value.length - 1) {
-    historyIndex.value++
-    note.value = copy(noteHistory.value[historyIndex.value])
-  }
-}
-
-/** set CTRL-Z keys */
+/** set CTRL-Z CTRL-Y keys for undo/redo */
 const KEY_DOWN = (event) => keyDown(event, undo, redo)
 
 onMounted(() => {
   window.scrollTo({ top: 0 })
   fetchNote()
 
-  /** set CTRL-Z keys */
+  /** set CTRL-Z CTRL-Y keys for undo/redo */
   document.addEventListener('keydown', KEY_DOWN)
   document.addEventListener('keyup', keyUp)
 })
@@ -92,29 +72,12 @@ onUnmounted(() => {
   document.removeEventListener('keyup', keyUp)
 })
 
-/** update noteHistory */
-watch(
-  note,
-  (v) => {
-    if (watching.value) {
-      if (historyIndex.value !== noteHistory.value.length - 1)
-        noteHistory.value.splice(historyIndex.value + 1)
-      if (noteHistory.value.length > 150) noteHistory.value.shift()
-      noteHistory.value.push(copy(v))
-      historyIndex.value = noteHistory.value.length - 1
-    } else {
-      watching.value = true
-    }
-  },
-  { deep: true }
-)
-
-/** update Note when delete on mainPage in new tab */
+/** rerouting to HomePage, when delete on mainPage in new tab */
 watch(
   allNotes,
   (v) => {
-    const currentIndex = v.findIndex((note) => note.noteId == route.params.id)
-    if (currentIndex == -1) fetchNote()
+    const id = route.params.id
+    if (id && !v.some((note) => note.noteId == id)) router.replace({ name: 'HomePage' })
   },
   { deep: true }
 )
@@ -134,9 +97,9 @@ const modalPromise = (showModal) => {
   })
 }
 
-/** get warning, when rerouting from the page */
+/** get modal warning, when rerouting from the page */
 onBeforeRouteLeave(async () => {
-  if (historyLengthOnSave.value < noteHistory.value.length) {
+  if (watchHistoryLength.value !== history.value.length) {
     showLeaveModal.value = true
     const res = await modalPromise(showLeaveModal)
     showLeaveModal.value = false
@@ -164,7 +127,7 @@ provide('note', note)
               color="rgb(53 53 53)"
               classList="md-36"
               title="Undo"
-              :disabled="!(historyIndex > 0)"
+              :disabled="!canUndo"
               @click="undo"
             />
             <icon-btn
@@ -172,7 +135,7 @@ provide('note', note)
               color="rgb(53 53 53)"
               classList="md-36"
               title="Redo"
-              :disabled="!(historyIndex < noteHistory.length - 1)"
+              :disabled="!canRedo"
               @click="redo"
             />
           </div>

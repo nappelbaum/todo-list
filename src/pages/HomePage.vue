@@ -1,11 +1,18 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import IconBtn from '../components/IconBtn.vue'
 import NoteCard from '@/components/NoteCard.vue'
+import MySelect from '../components/UI/MySelect.vue'
 import store from '@/store'
 
 const notes = computed(() => store.getters.allNotes)
 const error = computed(() => store.getters.notesErr)
+
+const selectedSort = ref('')
+const sortOptions = [
+  { value: 'title', name: 'По названию' },
+  { value: 'tasks', name: 'По количеству задач' }
+]
 </script>
 
 <template>
@@ -23,7 +30,8 @@ const error = computed(() => store.getters.notesErr)
     </div>
     <div v-else class="flex flex-col items-center font-body">
       <div class="flex flex-col items-center font-body">
-        <h2 class="font-bold text-xl mb-2 leading-8">Список заметок:</h2>
+        <h2 class="font-bold text-xl mb-4 leading-8">Список заметок:</h2>
+        <my-select v-model="selectedSort" :options="sortOptions" :selectedSort="selectedSort" />
         <transition-group
           tag="ul"
           name="notes"

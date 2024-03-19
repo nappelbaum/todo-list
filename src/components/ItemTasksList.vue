@@ -3,22 +3,17 @@ import { inject } from 'vue'
 import IconBtn from './IconBtn.vue'
 import ItemTask from './ItemTask.vue'
 import { v4 as uuidv4 } from 'uuid'
-import debounce from 'lodash.debounce'
 
 const note = inject('note')
 
-const addTask = debounce(() => {
+const addTask = () => {
   note.value.tasks.unshift({ id: uuidv4().substring(19), text: '', completed: false })
-}, 300)
+}
 
-const deleteTask = debounce((id) => {
+const deleteTask = (id) => {
   const i = note.value.tasks.findIndex((task) => task.id === id)
   note.value.tasks.splice(i, 1)
-}, 300)
-
-const onChangeTextInput = debounce((index, value) => {
-  note.value.tasks[index].text = value
-}, 300)
+}
 </script>
 
 <template>
@@ -35,9 +30,9 @@ const onChangeTextInput = debounce((index, value) => {
       <ItemTask
         :task="task"
         :index="index"
+        v-model:text="task.text"
         v-model:completed="task.completed"
         @deleteTask="deleteTask"
-        @onChangeTextInput="onChangeTextInput"
       />
     </li>
   </transition-group>

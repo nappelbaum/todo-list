@@ -17,10 +17,8 @@ const tasks = computed(() => {
     if (!props.note.tasks[i]) break
 
     const tasksNoMut = copy(props.note.tasks[i])
-
     tasks3Items.push(tasksNoMut)
-
-    const textLength = 70
+    const textLength = 90
     const textCut = tasks3Items[i].text?.slice(0, textLength)
     let textArr = textCut.split(' ')
     if (textCut.length === textLength) {
@@ -46,6 +44,13 @@ const deleteNote = () => {
     <li v-for="task in tasks" :key="task.id">
       <p :class="task.completed && 'line-through'" class="text-center">- {{ task.text }}</p>
     </li>
+    <router-link
+      :to="'/note/' + note.noteId"
+      v-if="note.tasks.length > 3"
+      class="mb-2 cursor-pointer"
+    >
+      <strong>+ ещё {{ note.tasks.length - 3 }}</strong>
+    </router-link>
     <div class="flex gap-x-3">
       <router-link :to="'/note/' + note.noteId" class="inline-block mx-auto">
         <icon-btn

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import IconBtn from './IconBtn.vue'
 
 const props = defineProps({
@@ -7,9 +7,10 @@ const props = defineProps({
   index: Number
 })
 
+const text = defineModel('text')
 const completed = defineModel('completed')
 
-const emit = defineEmits(['deleteTask', 'onChangeTextInput'])
+const emit = defineEmits(['deleteTask'])
 
 const editable = ref(false)
 const todoInput = ref(null)
@@ -17,7 +18,7 @@ const todoInput = ref(null)
 const onClick = async () => {
   if (!props.task.completed) {
     editable.value = true
-    await todoInput.value
+    await nextTick()
     todoInput.value.focus()
   }
 }
@@ -31,25 +32,20 @@ const onFocus = (e) => {
   editable.value = true
   autosize(e)
 }
-
-const onInput = (e) => {
-  emit('onChangeTextInput', props.index, e.target.value)
-  autosize(e)
-}
 </script>
 
 <template>
   <textarea
     v-if="editable && !task.completed"
     ref="todoInput"
-    :value="task.text"
+    v-model="text"
     rows="1"
     type="text"
     class="w-full rounded-sm outline-none py-1 px-3 border-none bg-white overflow-hidden"
     placeholder="Нажмите для редактирования"
     @focus="onFocus"
     @blur="editable = false"
-    @input="onInput"
+    @input="autosize"
     @keydown.prevent.enter="editable = false"
   ></textarea>
 
