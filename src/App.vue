@@ -12,7 +12,7 @@ onMounted(() => {
   fetchNotes()
   window.addEventListener('storage', fetchNotes)
 
-  console.log('wrong way')
+  console.log('newfix')
 })
 
 onUnmounted(() => {
