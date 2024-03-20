@@ -11,6 +11,8 @@ const fetchNotes = () => {
 onMounted(() => {
   fetchNotes()
   window.addEventListener('storage', fetchNotes)
+
+  console.log('wrong way')
 })
 
 onUnmounted(() => {
