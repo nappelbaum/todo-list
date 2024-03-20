@@ -23,13 +23,12 @@ const deleteTask = (id) => {
   </div>
   <transition-group tag="ul" name="tasks" class="w-full">
     <li
-      v-for="(task, index) in note.tasks"
+      v-for="task in note.tasks"
       :key="task.id"
       class="flex gap-x-2 items-center mb-2 py-2 px-3 bg-gray-200 rounded-md"
     >
       <ItemTask
         :task="task"
-        :index="index"
         v-model:text="task.text"
         v-model:completed="task.completed"
         @deleteTask="deleteTask"

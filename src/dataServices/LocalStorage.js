@@ -19,4 +19,13 @@ export default class LocalStorage {
       return err.message
     }
   }
+
+  static setSort(selectedSort) {
+    localStorage.setItem('sortOptions', selectedSort)
+  }
+
+  static getSort() {
+    if (localStorage.getItem('sortOptions')) return localStorage.getItem('sortOptions')
+    else return ''
+  }
 }

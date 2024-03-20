@@ -3,8 +3,7 @@ import { ref, nextTick } from 'vue'
 import IconBtn from './IconBtn.vue'
 
 const props = defineProps({
-  task: Object,
-  index: Number
+  task: Object
 })
 
 const text = defineModel('text')

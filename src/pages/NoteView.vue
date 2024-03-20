@@ -51,6 +51,7 @@ const saveNote = async () => {
 /** delete Note and rerouting to the main page*/
 const deleteNote = () => {
   store.dispatch('deleteNote', note.value)
+  watchHistoryLength.value = history.value.length
   showDeleteModal.value = false
   router.replace({ name: 'HomePage' })
 }

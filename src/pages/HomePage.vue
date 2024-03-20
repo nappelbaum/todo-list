@@ -1,9 +1,11 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import store from '@/store'
+import copy from '../functions/noMutCopy'
 import IconBtn from '../components/IconBtn.vue'
 import NoteCard from '@/components/NoteCard.vue'
 import MySelect from '../components/UI/MySelect.vue'
-import store from '@/store'
+import LocalStorage from '../dataServices/LocalStorage'
 
 const notes = computed(() => store.getters.allNotes)
 const error = computed(() => store.getters.notesErr)
@@ -13,6 +15,22 @@ const sortOptions = [
   { value: 'title', name: 'По названию' },
   { value: 'tasks', name: 'По количеству задач' }
 ]
+
+const sortedNotes = computed(() => {
+  if (selectedSort.value) {
+    return copy(notes.value).sort((note1, note2) => {
+      return selectedSort.value == 'tasks'
+        ? note1.tasks.length - note2.tasks.length
+        : note1.title.localeCompare(note2.title)
+    })
+  } else return copy(notes.value)
+})
+
+onMounted(() => {
+  selectedSort.value = LocalStorage.getSort()
+})
+
+watch(selectedSort, (val) => LocalStorage.setSort(val))
 </script>
 
 <template>
@@ -30,14 +48,18 @@ const sortOptions = [
     </div>
     <div v-else class="flex flex-col items-center font-body">
       <div class="flex flex-col items-center font-body">
-        <h2 class="font-bold text-xl mb-4 leading-8">Список заметок:</h2>
+        <h2 class="font-bold text-xl mb-4 leading-8">Список заметок</h2>
         <my-select v-model="selectedSort" :options="sortOptions" :selectedSort="selectedSort" />
         <transition-group
           tag="ul"
           name="notes"
           class="flex flex-col gap-y-2 items-center text-lg w-full"
         >
-          <li v-for="note in notes" :key="note.noteId" class="flex flex-col gap-y-2 items-center">
+          <li
+            v-for="note in sortedNotes"
+            :key="note.noteId"
+            class="flex flex-col gap-y-2 items-center"
+          >
             <note-card :note="note" />
           </li>
         </transition-group>
