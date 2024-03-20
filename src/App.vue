@@ -13,6 +13,7 @@ onMounted(() => {
   window.addEventListener('storage', fetchNotes)
 
   console.log('hotfix')
+  console.log('newfix')
 })
 
 onUnmounted(() => {
