@@ -1,7 +1,7 @@
 <script setup>
 import { inject } from 'vue'
 
-const note = inject('note')
+const { note } = inject('note')
 </script>
 
 <template>

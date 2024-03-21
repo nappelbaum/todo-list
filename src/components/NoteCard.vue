@@ -31,7 +31,7 @@ const tasks = computed(() => {
 })
 
 const deleteNote = () => {
-  store.dispatch('deleteNote', props.note)
+  store.dispatch('notes/deleteNote', props.note)
   showDeleteModal.value = false
 }
 </script>

@@ -1,15 +1,15 @@
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, inject } from 'vue'
 import IconBtn from './IconBtn.vue'
 
 const props = defineProps({
   task: Object
 })
 
+const { deleteTask } = inject('note')
+
 const text = defineModel('text')
 const completed = defineModel('completed')
-
-const emit = defineEmits(['deleteTask'])
 
 const editable = ref(false)
 const todoInput = ref(null)
@@ -53,6 +53,8 @@ const onFocus = (e) => {
     class="w-full rounded-sm outline-none py-1 px-3 border-none break-all"
     @click="onClick"
     :class="[!task.text && 'text-gray-400', task.completed && 'line-through']"
+    tabindex="0"
+    @focus="onClick"
   >
     {{ task.text ? task.text : 'Нажмите для редактирования' }}
   </span>
@@ -62,6 +64,7 @@ const onFocus = (e) => {
     :color="task.completed ? '#fff' : 'rgb(141 141 141)'"
     classList="md-30"
     class="relative rounded-md"
+    tabindex="-1"
     :class="task.completed && 'bg-green-400'"
   >
     <input
@@ -77,6 +80,6 @@ const onFocus = (e) => {
     color="#f93333"
     classList="md-30"
     title="Удалить задачу"
-    @click="emit('deleteTask', task.id)"
+    @click="deleteTask(task.id)"
   />
 </template>

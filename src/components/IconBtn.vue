@@ -20,8 +20,7 @@ button {
   cursor: pointer;
 }
 button:focus {
-  outline: none;
-  color: #e09b9b;
+  color: rgba(2, 2, 2, 0.8);
 }
 button:hover {
   cursor: pointer;

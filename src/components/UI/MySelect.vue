@@ -17,3 +17,11 @@ defineProps({
     </option>
   </select>
 </template>
+
+<style scoped>
+@-moz-document url-prefix() {
+  option {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+  }
+}
+</style>

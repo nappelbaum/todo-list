@@ -48,6 +48,7 @@ const emit = defineEmits(['close', 'confirm'])
   min-height: 100%;
   width: 100%;
   background: rgba(0, 0, 0, 0.6);
+  z-index: 15;
 }
 
 .modal {
@@ -60,6 +61,7 @@ const emit = defineEmits(['close', 'confirm'])
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  z-index: 16;
 
   @media (max-width: 520px) {
     min-width: 90vw;

@@ -10,6 +10,7 @@ import ItemTitle from '../components/ItemTitle.vue'
 import ItemTasks from '../components/ItemTasksList.vue'
 import IconBtn from '../components/IconBtn.vue'
 import ModalWindow from '../components/ModalWindow.vue'
+import modalPromise from '../functions/modalPromise.vue'
 
 const note = ref({})
 const showSaveModal = ref(false)
@@ -25,8 +26,8 @@ const { history, undo, redo, canUndo, canRedo, clear } = useDebouncedRefHistory(
   debounce: 300
 })
 
-const allNotes = computed(() => store.getters.allNotes)
-const error = computed(() => store.getters.notesErr)
+const allNotes = computed(() => store.getters['notes/allNotes'])
+const error = computed(() => store.getters['notes/notesErr'])
 
 /** check Note in store and update it */
 const fetchNote = () => {
@@ -43,17 +44,29 @@ const fetchNote = () => {
 /** save Note and rerouting to the note:id page*/
 const saveNote = async () => {
   showSaveModal.value = true
-  watchHistoryLength.value = history.value.length
-  store.dispatch('updateNotes', note.value)
-  !route.params.id && router.replace(`/note/${note.value.noteId}`)
+  setTimeout(() => {
+    watchHistoryLength.value = history.value.length
+    store.dispatch('notes/updateNotes', note.value)
+    !route.params.id && router.replace(`/note/${note.value.noteId}`)
+  }, 300)
 }
 
 /** delete Note and rerouting to the main page*/
 const deleteNote = () => {
-  store.dispatch('deleteNote', note.value)
+  store.dispatch('notes/deleteNote', note.value)
   watchHistoryLength.value = history.value.length
   showDeleteModal.value = false
   router.replace({ name: 'HomePage' })
+}
+
+/** add task in Note */
+const addTask = () => {
+  note.value.tasks.unshift({ id: uuidv4().substring(19), text: '', completed: false })
+}
+
+/** delete task in Note */
+const deleteTask = (id) => {
+  note.value.tasks = note.value.tasks.filter((task) => task.id !== id)
 }
 
 /** set CTRL-Z CTRL-Y keys for undo/redo */
@@ -86,29 +99,17 @@ watch(
 /** update Note when rerouting */
 watch(route, fetchNote, { deep: true })
 
-/** promise for modal window */
-const modalPromise = (showModal) => {
-  return new Promise((resolve) => {
-    watch(confirm, () => {
-      resolve(true)
-    })
-    watch(showModal, () => {
-      resolve(false)
-    })
-  })
-}
-
 /** get modal warning, when rerouting from the page */
 onBeforeRouteLeave(async () => {
   if (watchHistoryLength.value !== history.value.length) {
     showLeaveModal.value = true
-    const res = await modalPromise(showLeaveModal)
+    const res = await modalPromise(confirm, showLeaveModal)
     showLeaveModal.value = false
     return res ? true : false
   }
 })
 
-provide('note', note)
+provide('note', { note, addTask, deleteTask })
 </script>
 
 <template>

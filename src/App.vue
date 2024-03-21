@@ -5,15 +5,12 @@ import store from './store'
 import { onMounted, onUnmounted } from 'vue'
 
 const fetchNotes = () => {
-  store.dispatch('fetchNotes')
+  store.dispatch('notes/fetchNotes')
 }
 
 onMounted(() => {
   fetchNotes()
   window.addEventListener('storage', fetchNotes)
-
-  console.log('hotfix')
-  console.log('newfix')
 })
 
 onUnmounted(() => {

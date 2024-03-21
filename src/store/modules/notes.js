@@ -43,5 +43,6 @@ export default {
     notesErr(state) {
       return state.notesErr
     }
-  }
+  },
+  namespaced: true
 }

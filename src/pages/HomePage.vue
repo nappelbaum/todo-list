@@ -7,8 +7,8 @@ import NoteCard from '@/components/NoteCard.vue'
 import MySelect from '../components/UI/MySelect.vue'
 import LocalStorage from '../dataServices/LocalStorage'
 
-const notes = computed(() => store.getters.allNotes)
-const error = computed(() => store.getters.notesErr)
+const notes = computed(() => store.getters['notes/allNotes'])
+const error = computed(() => store.getters['notes/notesErr'])
 
 const selectedSort = ref('')
 const sortOptions = [

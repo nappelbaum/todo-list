@@ -2,18 +2,8 @@
 import { inject } from 'vue'
 import IconBtn from './IconBtn.vue'
 import ItemTask from './ItemTask.vue'
-import { v4 as uuidv4 } from 'uuid'
 
-const note = inject('note')
-
-const addTask = () => {
-  note.value.tasks.unshift({ id: uuidv4().substring(19), text: '', completed: false })
-}
-
-const deleteTask = (id) => {
-  const i = note.value.tasks.findIndex((task) => task.id === id)
-  note.value.tasks.splice(i, 1)
-}
+const { note, addTask } = inject('note')
 </script>
 
 <template>
@@ -27,12 +17,7 @@ const deleteTask = (id) => {
       :key="task.id"
       class="flex gap-x-2 items-center mb-2 py-2 px-3 bg-gray-200 rounded-md"
     >
-      <ItemTask
-        :task="task"
-        v-model:text="task.text"
-        v-model:completed="task.completed"
-        @deleteTask="deleteTask"
-      />
+      <ItemTask :task="task" v-model:text="task.text" v-model:completed="task.completed" />
     </li>
   </transition-group>
 </template>
