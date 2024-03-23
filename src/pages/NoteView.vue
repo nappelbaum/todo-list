@@ -10,7 +10,7 @@ import ItemTitle from '../components/ItemTitle.vue'
 import ItemTasks from '../components/ItemTasksList.vue'
 import IconBtn from '../components/IconBtn.vue'
 import ModalWindow from '../components/ModalWindow.vue'
-import modalPromise from '../functions/modalPromise.vue'
+import modalPromise from '../functions/modalPromise'
 
 const note = ref({})
 const showSaveModal = ref(false)
@@ -73,8 +73,8 @@ const deleteTask = (id) => {
 const KEY_DOWN = (event) => keyDown(event, undo, redo)
 
 onMounted(() => {
-  window.scrollTo({ top: 0 })
   fetchNote()
+  window.scrollTo({ top: 0 })
 
   /** set CTRL-Z CTRL-Y keys for undo/redo */
   document.addEventListener('keydown', KEY_DOWN)
@@ -218,3 +218,4 @@ provide('note', { note, addTask, deleteTask })
   color: red;
 }
 </style>
+../functions/modalPromise.js

@@ -1,4 +1,3 @@
-<script>
 import { watch } from 'vue'
 
 const modalPromise = (confirm, showModal) => {
@@ -13,4 +12,3 @@ const modalPromise = (confirm, showModal) => {
 }
 
 export default modalPromise
-</script>

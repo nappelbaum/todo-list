@@ -1,34 +1,17 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import store from '@/store'
-import copy from '../functions/noMutCopy'
+// import copy from '../functions/noMutCopy'
 import IconBtn from '../components/IconBtn.vue'
 import NoteCard from '@/components/NoteCard.vue'
 import MySelect from '../components/UI/MySelect.vue'
 import LocalStorage from '../dataServices/LocalStorage'
+import useSortedNotes from '../hooks/useSortedNotes'
 
 const notes = computed(() => store.getters['notes/allNotes'])
 const error = computed(() => store.getters['notes/notesErr'])
 
-const selectedSort = ref('')
-const sortOptions = [
-  { value: 'title', name: 'По названию' },
-  { value: 'tasks', name: 'По количеству задач' }
-]
-
-const sortedNotes = computed(() => {
-  if (selectedSort.value) {
-    return copy(notes.value).sort((note1, note2) => {
-      return selectedSort.value == 'tasks'
-        ? note1.tasks.length - note2.tasks.length
-        : note1.title.localeCompare(note2.title)
-    })
-  } else return copy(notes.value)
-})
-
-onMounted(() => {
-  selectedSort.value = LocalStorage.getSort()
-})
+const { selectedSort, sortOptions, sortedNotes } = useSortedNotes(notes)
 
 watch(selectedSort, (val) => LocalStorage.setSort(val))
 </script>
