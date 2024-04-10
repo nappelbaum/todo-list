@@ -20,10 +20,11 @@ const confirm = ref(true)
 const route = useRoute()
 const router = useRouter()
 const watchHistoryLength = ref(0)
+const delay = 300
 
 const { history, undo, redo, canUndo, canRedo, clear } = useDebouncedRefHistory(note, {
   deep: true,
-  debounce: 300
+  debounce: delay
 })
 
 const allNotes = computed(() => store.getters['notes/allNotes'])
@@ -38,7 +39,7 @@ const fetchNote = () => {
     else router.replace({ name: 'HomePage' })
   } else note.value = { noteId: uuidv4().substring(19), title: '', tasks: [] }
   watchHistoryLength.value = 1
-  setTimeout(() => clear(), 330)
+  setTimeout(() => clear(), delay + 30)
 }
 
 /** save Note and rerouting to the note:id page*/
@@ -48,7 +49,7 @@ const saveNote = async () => {
     watchHistoryLength.value = history.value.length
     store.dispatch('notes/updateNotes', note.value)
     !route.params.id && router.replace(`/note/${note.value.noteId}`)
-  }, 300)
+  }, delay)
 }
 
 /** delete Note and rerouting to the main page*/
